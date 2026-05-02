@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sublim.e.s</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       VARIABLES — modifie ici les couleurs et polices globales
+       ============================================================ */
+    :root {
+      --bg:        #f4f0e6;   /* fond général (crème) */
+      --ink:       #0d0d0d;   /* couleur principale du texte */
+      --muted:     #777;      /* texte secondaire */
+      --light:     #aaa;      /* texte tertiaire / labels */
+      --border:    #ddd;      /* bordures légères */
+      --card-bg:   #f4f0e6;   /* fond des cartes artistes */
+      --card-hover:#ede9de;   /* survol des cartes */
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       FOND — traits à l'encre (style Benchamma)
+       Tu peux supprimer ce bloc SVG si tu ne le veux pas
+       ============================================================ */
+    .ink-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.06; /* ajuste l'intensité ici (0 = invisible, 0.15 = marqué) */
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2.2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ============================================================
+       HEADER & NAVIGATION
+       ============================================================ */
+    header {
+      padding: 2.4rem 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      padding-top: 0.6rem;
+    }
+
+    nav a {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--light);
+      text-decoration: none;
+      cursor: pointer;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    nav a:hover { color: var(--ink); border-color: var(--ink); }
+
+    /* ============================================================
+       LOGO
+       Option A (par défaut) : texte SVG stylisé
+       Option B : ton propre logo image — voir la section HTML
+       ============================================================ */
+    .logo-block { position: relative; }
+    .logo-svg { display: block; overflow: visible; }
+
+    .tagline {
+      font-size: 0.56rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-top: 0.5rem;
+      font-weight: 300;
+    }
+
+    .divider {
+      width: 100%;
+      margin: 1.6rem 0 0;
+      height: 1px;
+      background: var(--ink);
+    }
+
+    /* ============================================================
+       HERO — section mise en avant
+       ============================================================ */
+    .hero {
+      padding: 3rem 0;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 4rem;
+      align-items: start;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .section-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 1.2rem;
+      font-weight: 300;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 2.6rem;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-body {
+      font-size: 0.7rem;
+      line-height: 2.1;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 1.6rem; }
+
+    .tag {
+      font-size: 0.52rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border: 1px solid #bbb;
+      padding: 3px 9px;
+      color: #999;
+    }
+
+    .tag-solid { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+    .hero-right { display: flex; flex-direction: column; gap: 2rem; }
+
+    .hero-quote {
+      border-left: 1.5px solid var(--ink);
+      padding-left: 1.2rem;
+    }
+
+    .hero-quote p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      line-height: 1.55;
+      color: #222;
+      font-weight: 300;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-quote span {
+      font-size: 0.55rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #bbb;
+      font-weight: 300;
+    }
+
+    /* ============================================================
+       SECTION TITLES
+       ============================================================ */
+    .sl {
+      font-size: 0.55rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: #bbb;
+      padding: 2.2rem 0 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 300;
+    }
+
+    .sl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ============================================================
+       CARROUSEL DE POÈMES
+       Les cartes sont en aspect-ratio portrait (3/4)
+       L'image remplit toute la carte, le texte flotte dessus
+       ============================================================ */
+    .carousel-track-outer { overflow: hidden; }
+
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .poem-card {
+      flex: 0 0 calc(33.333% - 1rem);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3 / 4;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Image de la carte ──
+       Remplace le SVG placeholder par un <img> si tu as une image :
+       <img class="poem-card-img" src="ton-image.jpg" alt="description" />
+    */
+    .poem-card-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(100%) contrast(1.05); /* retire grayscale() pour garder la couleur */
+      transition: transform 0.4s ease;
+    }
+
+    /* SVG placeholder — supprime cette règle une fois tes images ajoutées */
+    .poem-card-imgsvg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* dégradé sombre pour lisibilité du texte */
+    .poem-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(10,10,8,0.85) 0%,
+        rgba(10,10,8,0.3) 45%,
+        rgba(10,10,8,0.0) 100%
+      );
+      transition: background 0.3s;
+    }
+
+    .poem-card:hover .poem-card-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(10,10,8,0.94) 0%,
+        rgba(10,10,8,0.5) 55%,
+        rgba(10,10,8,0.05) 100%
+      );
+    }
+
+    .poem-card:hover .poem-card-img { transform: scale(1.03); }
+
+    /* texte superposé à l'image */
+    .poem-card-body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.2rem 1rem 1.1rem;
+      z-index: 2;
+    }
+
+    .poem-card-num  { font-size: 0.48rem; letter-spacing: 0.22em; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; font-weight: 300; }
+    .poem-card-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: #fff; font-weight: 300; line-height: 1.2; margin-bottom: 0.35rem; }
+    .poem-card-author { font-size: 0.54rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 300; }
+    .poem-card-arrow { font-size: 0.65rem; color: rgba(255,255,255,0.35); text-align: right; margin-top: 0.7rem; }
+
+    /* contrôles du carrousel */
+    .carousel-controls { display: flex; gap: 0.8rem; margin-top: 1.2rem; align-items: center; }
+
+    .carousel-btn {
+      background: transparent;
+      border: 1px solid #ccc;
+      width: 32px; height: 32px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: #999;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .carousel-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+    .carousel-dots { display: flex; gap: 6px; margin-left: 0.5rem; }
+
+    .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #ccc;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .dot.active { background: var(--ink); }
+
+    /* ============================================================
+       OVERLAY POÈME (lecture plein écran)
+       ============================================================ */
+    .poem-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(244, 240, 230, 0.97);
+      z-index: 100;
+      overflow-y: auto;
+      padding: 3rem 2rem;
+    }
+
+    .poem-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+    .poem-inner { max-width: 560px; width: 100%; }
+
+    .poem-close {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--light);
+      cursor: pointer;
+      margin-bottom: 2.5rem;
+      display: inline-block;
+      border-bottom: 1px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .poem-close:hover { color: var(--ink); border-color: var(--ink); }
+
+    .poem-overlay-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 2.2rem;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .poem-overlay-author {
+      font-size: 0.56rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #bbb;
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    .poem-overlay-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 2.2;
+      color: #333;
+      font-weight: 300;
+      white-space: pre-line;
+    }
+
+    /* ============================================================
+       REVUES & FANZINES
+       ============================================================ */
+    .zines-list { border-top: 1px solid var(--border); }
+
+    .zine-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid #eee;
+      gap: 1rem;
+      cursor: pointer;
+      transition: padding-left 0.2s;
+    }
+
+    .zine-row:hover { padding-left: 0.7rem; }
+
+    .zine-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--ink);
+      font-weight: 300;
+    }
+
+    .zine-info { font-size: 0.56rem; letter-spacing: 0.15em; color: #bbb; white-space: nowrap; font-weight: 300; }
+    .zine-arrow { color: #ccc; font-size: 0.75rem; }
+
+    /* ============================================================
+       FORMULAIRE DE CONTACT
+       ============================================================ */
+    .contact-grid {
+      padding: 2.5rem 0 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 4rem;
+      border-top: 1px solid var(--border);
+      align-items: start;
+    }
+
+    .contact-intro p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #888;
+      font-weight: 300;
+    }
+
+    .form { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    .field label {
+      font-size: 0.52rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: #bbb;
+      font-weight: 300;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #d0ccc0;
+      padding: 8px 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--ink);
+      font-weight: 300;
+      outline: none;
+      border-radius: 0;
+      width: 100%;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus { border-bottom-color: var(--ink); }
+
+    .field textarea { resize: none; height: 80px; }
+    .field select { cursor: pointer; color: #999; }
+    .field select option { color: var(--ink); }
+
+    .submit-btn {
+      margin-top: 0.4rem;
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      padding: 11px 28px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      cursor: pointer;
+      align-self: flex-start;
+      font-weight: 300;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .submit-btn:hover { background: var(--ink); color: var(--bg); }
+
+    .form-success {
+      font-size: 0.68rem;
+      color: #aaa;
+      font-style: italic;
+      margin-top: 0.5rem;
+      display: none;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      border-top: 1px solid var(--ink);
+      padding: 1.5rem 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      color: #ccc;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.8rem;
+    }
+
+    .footer-links a {
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--light);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ============================================================
+       RESPONSIVE (mobile)
+       ============================================================ */
+    @media (max-width: 640px) {
+      .hero { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-right { display: none; }
+      .poem-card { flex: 0 0 calc(80% - 1rem); }
+      .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .logo-svg { height: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- fond à l'encre (supprime cette balise pour retirer l'effet) -->
+<svg class="ink-bg" viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <g fill="none" stroke="#0d0d0d">
+    <path stroke-width="0.8" d="M-20,80 C40,60 80,120 140,90 C200,60 220,130 290,110 C360,90 380,160 460,140 C540,120 560,190 640,170 C720,150 750,220 830,200"/>
+    <path stroke-width="0.5" d="M-20,100 C50,85 90,140 160,115 C230,90 250,155 330,135 C410,115 430,180 510,158"/>
+    <path stroke-width="1.2" d="M700,20 C680,80 720,140 700,200 C680,260 720,320 700,380 C680,440 720,500 700,560"/>
+    <path stroke-width="0.7" d="M780,0 C760,30 790,70 770,100 C750,130 785,170 760,200 C735,230 770,260 750,290"/>
+    <path stroke-width="0.9" d="M0,500 C40,490 80,540 130,520 C180,500 210,555 270,535 C330,515 360,565 420,548"/>
+    <path stroke-width="1.5" d="M-20,680 C80,620 180,600 280,560 C380,520 470,490 570,450 C670,410 760,370 870,310"/>
+    <circle cx="860" cy="80" r="18" stroke-width="0.6" opacity="0.5"/>
+    <circle cx="40" cy="640" r="24" stroke-width="0.6" opacity="0.4"/>
+  </g>
+</svg>
+
+<!-- ============================================================
+     OVERLAY LECTURE POÈME
+     ============================================================ -->
+<div class="poem-overlay" id="overlay">
+  <div class="poem-inner">
+    <span class="poem-close" onclick="closePoem()">← retour</span>
+    <h2 class="poem-overlay-title" id="ov-title"></h2>
+    <p class="poem-overlay-author" id="ov-author"></p>
+    <div class="poem-overlay-text" id="ov-text"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CONTENU PRINCIPAL
+     ============================================================ -->
+<div class="wrap">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="logo-block">
+
+      <!--
+        ╔══════════════════════════════════════════════╗
+        ║  OPTION A — LOGO TEXTE SVG (actif par défaut)
+        ║  Supprime ce bloc SVG si tu utilises Option B
+        ╚══════════════════════════════════════════════╝
+      -->
+      <svg class="logo-svg" viewBox="0 0 580 90" height="90" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            .lg       { font-family: 'Braggadocio', 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-size: 88px; fill: #0d0d0d; letter-spacing: 0.02em; }
+            .lg-ghost { font-family: 'Braggadocio', 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-size: 88px; fill: none; stroke: #0d0d0d; stroke-width: 0.6px; letter-spacing: 0.02em; opacity: 0.13; }
+            .lg-dot   { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 72px; fill: #0d0d0d; opacity: 0.22; }
+            .lg-e     { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 84px; fill: #0d0d0d; }
+          </style>
+        </defs>
+        <text class="lg-ghost" x="3" y="82">SUBLIMES</text>
+        <text class="lg"       x="0"   y="80">SUBL</text>
+        <text class="lg-dot"   x="168" y="80">I</text>
+        <text class="lg"       x="186" y="80">M</text>
+        <text class="lg-dot"   x="248" y="80">.</text>
+        <text class="lg-e"     x="264" y="80">e</text>
+        <text class="lg-dot"   x="302" y="80">.</text>
+        <text class="lg"       x="316" y="80">S</text>
+      </svg>
+
+      <!--
+        ╔══════════════════════════════════════════════╗
+        ║  OPTION B — TON PROPRE LOGO IMAGE
+        ║  1. Décommente les lignes ci-dessous
+        ║  2. Remplace "logo.png" par le chemin de ton fichier
+        ║  3. Supprime le bloc SVG Option A au-dessus
+        ╚══════════════════════════════════════════════╝
+
+        <img src="logo.png" alt="Sublim.e.s" style="height: 80px; display: block;" />
+      -->
+
+      <!-- sous-titre — modifie le texte ici -->
+      <p class="tagline">poésie — fanzines — artistes</p>
+    </div>
+
+    <!-- navigation — ajoute / retire des liens ici -->
+    <nav>
+      <a href="#textes">artistes</a>
+      <a href="#zines">revues & zines</a>
+      <a href="#contact">agenda</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- ── HERO — article mis en avant ── -->
+  <section class="hero">
+    <div>
+      <!-- modifie le label de section -->
+      <p class="section-label">— à la une</p>
+
+      <!-- modifie le titre de l'article -->
+      <h2 class="hero-title">La parole comme acte de résistance</h2>
+
+      <!-- modifie le texte de présentation -->
+      <p class="hero-body">Rencontre avec trois voix qui refusent le silence poli. Entre spoken word, poésie brute et édition sauvage — un feu qui circule sous les radars.</p>
+
+      <!-- modifie les tags -->
+      <div class="tags">
+        <span class="tag tag-solid">entretien</span>
+        <span class="tag">spoken word</span>
+        <span class="tag">n°07</span>
+      </div>
+    </div>
+
+    <!-- colonne droite : citation mise en avant -->
+    <div class="hero-right">
+      <svg width="100%" viewBox="0 0 280 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#0d0d0d" style="max-width:280px; opacity:0.85;">
+        <path stroke-width="1.2" d="M10,60 C40,20 80,80 120,40 C160,0 200,70 240,30 C260,10 275,50 280,45"/>
+        <path stroke-width="0.5" d="M10,70 C42,35 82,88 122,52 C162,16 202,78 242,40"/>
+        <path stroke-width="0.7" d="M0,90 C30,75 60,100 90,85 C120,70 150,98 180,82 C210,66 240,92 270,78"/>
+        <circle cx="255" cy="100" r="8" stroke-width="0.6"/>
+        <circle cx="262" cy="103" r="3.5" stroke-width="0.4"/>
+      </svg>
+
+      <!-- citation + attribution — modifie ici -->
+      <div class="hero-quote">
+        <p>« écrire c'est rater mieux la prochaine fois »</p>
+        <span>— Myriam K., n°06</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       CARROUSEL DE TEXTES DE POÉSIE
+       ══════════════════════════════════════════════════════════
+       Pour chaque carte :
+         1. Remplace le <svg class="poem-card-imgsvg"...> par :
+            <img class="poem-card-img" src="mon-image.jpg" alt="description" />
+         2. Modifie le numéro, titre, auteur
+         3. Ajoute le texte du poème dans le tableau JS en bas
+       ══════════════════════════════════════════════════════════ -->
+  <p class="sl" id="textes">textes</p>
+  <div>
+    <div class="carousel-track-outer">
+      <div class="carousel-track" id="track">
+
+        <!-- ── CARTE 1 ── -->
+        <div class="poem-card" onclick="openPoem(0)">
+          <!--
+            REMPLACE CE BLOC SVG PAR TON IMAGE :
+            <img class="poem-card-img" src="image-1.jpg" alt="Géologie du silence" />
+          -->
+          <svg class="poem-card-imgsvg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="400" fill="#e0dcd0"/>
+            <g fill="none" stroke="#0d0d0d" opacity="0.55">
+              <path stroke-width="1.5" d="M0,200 C30,150 60,250 90,180 C120,110 150,260 180,190 C210,120 240,230 270,160"/>
+              <path stroke-width="0.7" d="M0,220 C35,175 65,268 95,198 C125,128 155,272 185,205"/>
+              <circle cx="240" cy="80" r="40" stroke-width="1"/>
+              <circle cx="252" cy="88" r="18" stroke-width="0.6"/>
+            </g>
+          </svg>
+          <div class="poem-card-overlay"></div>
+          <div class="poem-card-body">
+            <p class="poem-card-num">01</p>                          <!-- numéro -->
+            <p class="poem-card-title">Géologie du silence</p>       <!-- titre -->
+            <p class="poem-card-author">Myriam K.</p>                <!-- auteur·e -->
+            <p class="poem-card-arrow">→</p>
+          </div>
+        </div>
+
+        <!-- ── CARTE 2 ── -->
+        <div class="poem-card" onclick="openPoem(1)">
+          <svg class="poem-card-imgsvg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="400" fill="#d8d4c8"/>
+            <g fill="none" stroke="#0d0d0d" opacity="0.6">
+              <path stroke-width="2" d="M150,0 C148,80 155,160 150,240 C145,300 152,360 150,405"/>
+              <path stroke-width="1" d="M0,150 C40,142 80,162 120,150 C160,138 200,158 240,148"/>
+              <circle cx="150" cy="0" r="20" stroke-width="1.2"/>
+              <circle cx="150" cy="400" r="28" stroke-width="1"/>
+            </g>
+          </svg>
+          <div class="poem-card-overlay"></div>
+          <div class="poem-card-body">
+            <p class="poem-card-num">02</p>
+            <p class="poem-card-title">Axis mundi</p>
+            <p class="poem-card-author">Tanguy Morel</p>
+            <p class="poem-card-arrow">→</p>
+          </div>
+        </div>
+
+        <!-- ── CARTE 3 ── -->
+        <div class="poem-card" onclick="openPoem(2)">
+          <svg class="poem-card-imgsvg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="400" fill="#e4e0d4"/>
+            <g fill="none" stroke="#0d0d0d" opacity="0.55">
+              <path stroke-width="1" d="M0,100 C20,140 40,60 60,110 C80,160 100,70 120,120 C140,170 160,80 180,130"/>
+              <path stroke-width="1.8" d="M0,300 C60,275 120,310 180,288 C240,266 280,295 310,285"/>
+              <circle cx="60" cy="40" r="28" stroke-width="0.8"/>
+              <circle cx="200" cy="360" r="36" stroke-width="0.8"/>
+            </g>
+          </svg>
+          <div class="poem-card-overlay"></div>
+          <div class="poem-card-body">
+            <p class="poem-card-num">03</p>
+            <p class="poem-card-title">Les eaux basses</p>
+            <p class="poem-card-author">Saoirse D.</p>
+            <p class="poem-card-arrow">→</p>
+          </div>
+        </div>
+
+        <!-- ── CARTE 4 ── -->
+        <div class="poem-card" onclick="openPoem(3)">
+          <svg class="poem-card-imgsvg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="400" fill="#dcd8cc"/>
+            <g fill="none" stroke="#0d0d0d" opacity="0.62">
+              <path stroke-width="0.8" d="M10,30 C40,100 30,180 60,260 C90,340 80,370 110,390"/>
+              <path stroke-width="1.4" d="M180,0 C200,70 190,150 210,230 C230,310 220,360 240,400"/>
+              <circle cx="280" cy="300" r="32" stroke-width="0.9"/>
+              <circle cx="290" cy="312" r="12" stroke-width="0.5"/>
+            </g>
+          </svg>
+          <div class="poem-card-overlay"></div>
+          <div class="poem-card-body">
+            <p class="poem-card-num">04</p>
+            <p class="poem-card-title">Résidus fossiles</p>
+            <p class="poem-card-author">Collectif Crasse</p>
+            <p class="poem-card-arrow">→</p>
+          </div>
+        </div>
+
+        <!-- ── CARTE 5 ── -->
+        <div class="poem-card" onclick="openPoem(4)">
+          <svg class="poem-card-imgsvg" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="400" fill="#e8e4d8"/>
+            <g fill="none" stroke="#0d0d0d" opacity="0.55">
+              <path stroke-width="1.2" d="M0,200 C50,80 100,320 150,150 C200,0 250,280 300,120"/>
+              <path stroke-width="0.4" d="M0,180 C48,62 98,298 148,132 C198,-18 248,265 298,108"/>
+              <circle cx="30" cy="330" r="40" stroke-width="1"/>
+              <circle cx="42" cy="342" r="16" stroke-width="0.6"/>
+            </g>
+          </svg>
+          <div class="poem-card-overlay"></div>
+          <div class="poem-card-body">
+            <p class="poem-card-num">05</p>
+            <p class="poem-card-title">Nuit blanche en decrescendo</p>
+            <p class="poem-card-author">Atelier Blanc</p>
+            <p class="poem-card-arrow">→</p>
+          </div>
+        </div>
+
+        <!-- ══ AJOUTER UNE CARTE : copie un bloc "poem-card" ci-dessus ══ -->
+
+      </div>
+    </div>
+
+    <div class="carousel-controls">
+      <button class="carousel-btn" onclick="move(-1)">←</button>
+      <button class="carousel-btn" onclick="move(1)">→</button>
+      <div class="carousel-dots" id="dots"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       REVUES & FANZINES
+       Ajoute / retire des .zine-row selon tes numéros
+       ══════════════════════════════════════════════════════════ -->
+  <p class="sl" id="zines">revues & fanzines</p>
+  <div class="zines-list">
+
+    <!-- chaque ligne = un numéro ; modifie titre, date, pages -->
+    <div class="zine-row">
+      <span class="zine-title">Sublim.e.s — n°07</span>
+      <span class="zine-info">2026 — 48 p.</span>
+      <span class="zine-arrow">→</span>
+    </div>
+
+    <div class="zine-row">
+      <span class="zine-title">Sublim.e.s — n°06</span>
+      <span class="zine-info">2025 — 36 p.</span>
+      <span class="zine-arrow">→</span>
+    </div>
+
+    <div class="zine-row">
+      <span class="zine-title">Sublim.e.s — n°05</span>
+      <span class="zine-info">2025 — 40 p.</span>
+      <span class="zine-arrow">→</span>
+    </div>
+
+    <div class="zine-row">
+      <span class="zine-title">Sublim.e.s — n°04</span>
+      <span class="zine-info">2024 — 32 p.</span>
+      <span class="zine-arrow">→</span>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       FORMULAIRE DE CONTACT
+       Le formulaire est statique (pas de backend).
+       Pour un vrai envoi, connecte-le à Formspree ou Netlify Forms :
+       <form action="https://formspree.io/f/TON_ID" method="POST">
+       ══════════════════════════════════════════════════════════ -->
+  <p class="sl" id="contact">contact</p>
+  <div class="contact-grid">
+
+    <!-- texte d'introduction — modifie ici -->
+    <div class="contact-intro">
+      <p>Pour soumettre des textes, proposer une collaboration, commander un numéro — ou simplement nous écrire. On lit tout.</p>
+    </div>
+
+    <div class="form">
+      <div class="field">
+        <label>Nom</label>
+        <input type="text" id="cn" placeholder="votre nom" />
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="ce" placeholder="votre@email.com" />
+      </div>
+      <div class="field">
+        <label>Sujet</label>
+        <select id="cs">
+          <option value="" disabled selected>choisir...</option>
+          <!-- modifie / ajoute des options ici -->
+          <option>Soumettre des textes</option>
+          <option>Proposition de collaboration</option>
+          <option>Commander un numéro</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Message</label>
+        <textarea id="cm" placeholder="votre message..."></textarea>
+      </div>
+      <button class="submit-btn" onclick="send()">Envoyer →</button>
+      <p class="form-success" id="cok">Message reçu — on vous répond bientôt.</p>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <!-- modifie le texte de copyright -->
+    <p class="footer-copy">© sublim.e.s — édition indépendante — Paris</p>
+    <div class="footer-links">
+      <!-- modifie les href avec tes vraies URLs -->
+      <a href="https://instagram.com/">instagram</a>
+      <a href="#">newsletter</a>
+      <a href="#">commander</a>
+    </div>
+  </footer>
+
+</div><!-- fin .wrap -->
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+  /* ══════════════════════════════════════════════════════════
+     POÈMES — ajoute / modifie chaque entrée du tableau
+     L'index (0, 1, 2...) doit correspondre à l'ordre des cartes HTML
+     ══════════════════════════════════════════════════════════ */
+  const poems = [
+    {
+      title:  'Géologie du silence',
+      author: 'Myriam K. — n°07, 2026',
+      text:   `sous la peau des mots
+il y a de la roche
+
+strate après strate
+les choses dites
+s'accumulent
+comme des sédiments
+
+et le silence
+n'est pas absence —
+
+c'est la pression
+qui fait tenir
+tout le reste
+
+*
+
+je t'ai écrit
+sur du calcaire
+tu n'as rien vu
+que de la pierre blanche`
+    },
+    {
+      title:  'Axis mundi',
+      author: 'Tanguy Morel — n°07, 2026',
+      text:   `l'arbre sait
+ce que nous avons oublié :
+
+que le haut et le bas
+sont la même direction
+
+*
+
+j'ai tracé une ligne
+du sol au ciel
+
+la ligne a disparu
+mais la séparation aussi`
+    },
+    {
+      title:  'Les eaux basses',
+      author: 'Saoirse D. — n°06, 2025',
+      text:   `en juillet les rivières montrent
+ce qu'elles cachent en hiver
+
+des os de galets
+des noms gravés dans la boue sèche
+une bouteille qui n'a rien à dire
+
+*
+
+nos conversations aussi
+ont leurs saisons basses
+
+là où on peut traverser à pied
+sans se noyer`
+    },
+    {
+      title:  'Résidus fossiles',
+      author: 'Collectif Crasse — n°06, 2025',
+      text:   `NOUS AVONS TROUVÉ
+dans le béton de l'école
+l'empreinte d'une feuille
+
+datée d'avant l'école
+d'avant le béton
+d'avant nous
+
+*
+
+quelque chose a vécu ici
+avant que ça serve à autre chose`
+    },
+    {
+      title:  'Nuit blanche en decrescendo',
+      author: 'Atelier Blanc — n°05, 2025',
+      text:   `4h du matin —
+la ville parle moins fort
+mais elle parle encore
+
+une sirène au loin
+un chien
+une fenêtre qui s'éteint
+
+*
+
+j'aurais voulu te dire
+quelque chose d'important
+mais le silence s'est mis
+entre la pensée et la bouche
+
+et j'ai laissé faire`
+    }
+  ];
+
+  /* ── carrousel ── */
+  let current = 0;
+  const VISIBLE = 3;
+  const total   = poems.length;
+  const track   = document.getElementById('track');
+  const dotsEl  = document.getElementById('dots');
+
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    const pages = total - VISIBLE + 1;
+    for (let i = 0; i < pages; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.onclick = () => goTo(i);
+      dotsEl.appendChild(d);
+    }
+  }
+
+  function updateDots() {
+    document.querySelectorAll('.dot').forEach((d, i) =>
+      d.classList.toggle('active', i === current)
+    );
+  }
+
+  function goTo(idx) {
+    const pages = total - VISIBLE + 1;
+    current = Math.max(0, Math.min(idx, pages - 1));
+    const cardW = track.children[0].offsetWidth + 24;
+    track.style.transform = `translateX(-${current * cardW}px)`;
+    updateDots();
+  }
+
+  function move(dir) { goTo(current + dir); }
+
+  /* ── overlay poème ── */
+  function openPoem(i) {
+    document.getElementById('ov-title').textContent  = poems[i].title;
+    document.getElementById('ov-author').textContent = poems[i].author;
+    document.getElementById('ov-text').textContent   = poems[i].text;
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closePoem() {
+    document.getElementById('overlay').classList.remove('open');
+  }
+
+  /* ── formulaire (simulation) ── */
+  function send() {
+    const n = document.getElementById('cn').value;
+    const e = document.getElementById('ce').value;
+    const m = document.getElementById('cm').value;
+    if (!n || !e || !m) {
+      alert('Merci de remplir au moins votre nom, email et message.');
+      return;
+    }
+    document.querySelector('.submit-btn').style.display = 'none';
+    document.getElementById('cok').style.display = 'block';
+  }
+
+  buildDots();
+</script>
+
+</body>
+</html>
