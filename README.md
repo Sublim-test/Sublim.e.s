@@ -1,2 +1,2 @@
 # Sublim.e.s
-Poésie et sororité
+Poésie sorore
